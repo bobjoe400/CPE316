@@ -16,16 +16,19 @@
   ******************************************************************************
   */
 /* USER CODE END Header */
-#include "main.h"
-#include <stdio.h>
+
 #include <stdint.h>
 #include <string.h>
-void SystemClock_Config(void);
+#include "main.h"
+
+#define COUNT_MAX 16
+#define NUM_LEDS 4
+#define WAIT_TIME 100000
 
 enum MODER_MASK_ENUM{ LED_0_MOD_MASK = GPIO_MODER_MODE0, LED_1_MOD_MASK = GPIO_MODER_MODE1,
-					  LED_2_MOD_MASK = GPIO_MODER_MODE2, LED_3_MOD_MASK = GPIO_MODER_MODE2};
+					  LED_2_MOD_MASK = GPIO_MODER_MODE2, LED_3_MOD_MASK = GPIO_MODER_MODE3};
 enum MODER_SET_ENUM{ LED_0_MOD_SET = GPIO_MODER_MODE0_0, LED_1_MOD_SET = GPIO_MODER_MODE1_0,
-	  	  	  	  	 LED_2_MOD_SET = GPIO_MODER_MODE2_0, LED_3_MOD_SET = GPIO_MODER_MODE2_0};
+	  	  	  	  	 LED_2_MOD_SET = GPIO_MODER_MODE2_0, LED_3_MOD_SET = GPIO_MODER_MODE3_0};
 enum OTYPER_ENUM{ LED_0_OT_SET = GPIO_OTYPER_OT0, LED_1_OT_SET = GPIO_OTYPER_OT1,
 				  LED_2_OT_SET = GPIO_OTYPER_OT2, LED_3_OT_SET = GPIO_OTYPER_OT3};
 enum OSPEEDR_ENUM{ LED_0_SPR_SET = GPIO_OSPEEDR_OSPEED0, LED_1_SPR_SET = GPIO_OSPEEDR_OSPEED1,
@@ -46,48 +49,70 @@ uint32_t SETUP_PINS_POS[4][6] = {
 
 uint16_t ODR_ITR[4] = { LED_0_ODR_SET, LED_1_ODR_SET, LED_2_ODR_SET, LED_3_ODR_SET};
 
-typedef struct{
-	uint32_t MODER_MASK;
-	uint32_t MODER_SET;
-	uint16_t OTYPER_SET;
-	uint32_t OSPEEDR_SET;
-	uint32_t PUPDR_MASK;
-	uint32_t PUPDR_SET;
+typedef union vec3_u{
+	struct{
+		uint32_t MODER_MASK, MODER_SET, OTYPER_SET, OSPEEDR_SET, PUPDR_MASK, PUPDR_SET;
+	}vec3_s;
+	uint32_t vec3_a[6];
 }SetupData;
 
+void Pin_Config();
+void Num_to_Bits(uint8_t, uint8_t[]);
+void Set_LEDs(uint8_t[]);
+void SystemClock_Config(void);
 
 int main(void)
 {
   HAL_Init();
   SystemClock_Config();
 
-  SetupData* GPIO_C;
-  memset(GPIO_C, 0, sizeof(SetupData));
+  Pin_Config();
 
-  for(int led_num = 0; led_num< 4; led_num++){
-	  for(int setup_field = 0; setup_field <6; setup_field++){
-		  GPIO_C->MODER_MASK += SETUP_PINS_POS[led_num][setup_field];
-		  GPIO_C->MODER_SET += SETUP_PINS_POS[led_num][setup_field];
-		  GPIO_C->OTYPER_SET += SETUP_PINS_POS[led_num][setup_field];
-		  GPIO_C->OSPEEDR_SET += SETUP_PINS_POS[led_num][setup_field];
-		  GPIO_C->PUPDR_MASK += SETUP_PINS_POS[led_num][setup_field];
-		  GPIO_C->PUPDR_SET += SETUP_PINS_POS[led_num][setup_field];
-	  }
-  }
+  RCC->CR |= RCC_MSION;
 
-  GPIOC->MODER &= ~(GPIO_C->MODER_MASK);
-  GPIOC->MODER |= GPIO_C->MODER_SET;
-  GPIOC->OTYPER |= GPIO_C->OTYPER_SET;
-  GPIOC->OSPEEDR |= GPIO_C->OSPEEDR_SET;
-  GPIOC->PUPDR &= ~(GPIO_C->PUPDR_MASK);
-  GPIOC->PUPDR |= GPIO_C->PUPDR_SET;
-
-
-
+  uint8_t counter = 0;
+  uint8_t leds_on[NUM_LEDS] = {0};
   while (1)
   {
-
+	  Num_to_Bits(counter, leds_on);
+	  Set_LEDs(leds_on);
+	  counter++;
+	  if(counter== COUNT_MAX){
+		  counter = 0;
+	  }
   }
+}
+
+void Pin_Config(){
+	SetupData GPIO_C;
+	memset(&GPIO_C, 0, sizeof(SetupData));
+
+	for(int led_num = 0; led_num< NUM_LEDS; led_num++){
+	  for(int setup_field = 0; setup_field <6; setup_field++){
+		  GPIO_C.vec3_a[setup_field] += SETUP_PINS_POS[led_num][setup_field];
+	  }
+	}
+
+	GPIOC->MODER &= GPIO_C.vec3_s.MODER_MASK;
+	GPIOC->MODER |= GPIO_C.vec3_s.MODER_SET;
+	GPIOC->OTYPER |= GPIO_C.vec3_s.OTYPER_SET;
+	GPIOC->OSPEEDR |= GPIO_C.vec3_s.OSPEEDR_SET;
+	GPIOC->PUPDR &= ~(GPIO_C.vec3_s.PUPDR_MASK);
+	GPIOC->PUPDR |= GPIO_C.vec3_s.PUPDR_SET;
+}
+
+void Num_to_Bits(uint8_t num, uint8_t num_arr[]){
+	for(int i = 0; i < NUM_LEDS; i++){
+		num_arr[i] = (num>>i) & 0x1;
+	}
+}
+
+void Set_LEDs(uint8_t led_arr[]){
+	uint32_t ODR = 0;
+	for(int i = 0; i< NUM_LEDS; i++){
+		ODR += led_arr[i] & ODR_ITR[i];
+	}
+	GPIOC->ODR = ODR;
 }
 
 /**
