@@ -18,8 +18,9 @@
 /* USER CODE END Header */
 
 #include "main.h"
-#include "gpio.h"
-#include "constraints.h"
+
+#include "../../Drivers/GPIO_Driver/constraints.h"
+#include "../../Drivers/GPIO_Driver/gpio.h"
 
 #define COUNT_MAX 16
 #define NUM_PINS 4
@@ -36,7 +37,7 @@ int main(void)
 
   RCC->AHB2ENR |= GPIOC_CLK_EN;
 
-  uint8_t GPIOC_SET_OUTPUT[NUM_PINS] = {0b0, 0b0, 0b0, 0b0};
+  uint8_t GPIOC_SET_OUTPUT[NUM_PINS] = {0x00, 0x00, 0x00, 0x00};
 
   Pin_Config(FIELD_TOTAL, GPIO_C, GPIOC_SET_OUTPUT, GPIOC_PIN_SETUP_VALS);
 

@@ -4,9 +4,10 @@
  *  Created on: Apr 5, 2023
  *      Author: cnama
  */
+#include "../../Drivers/GPIO_Driver/gpio.h"
+
 #include <string.h>
 #include <stdio.h>
-#include "gpio.h"
 
 #define FIELD_TOTAL 8
 

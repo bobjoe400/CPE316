@@ -5,8 +5,8 @@
  *      Author: cnama
  */
 
-#ifndef INC_GPIO_H_
-#define INC_GPIO_H_
+#ifndef GPIO_DRIVER_GPIO_H_
+#define GPIO_DRIVER_GPIO_H_
 #include "stm32l4xx_hal.h"
 #include <stdint.h>
 
@@ -29,4 +29,4 @@ void GIPO_Destroy();
 GPIO_TypeDef* GPIO_Get(uint8_t gpio_sel);
 void Pin_Config(uint16_t field_total, uint8_t gpio_sel, uint8_t* set_output, uint16_t (*pin_setup)[field_total]);
 
-#endif /* INC_GPIO_H_ */
+#endif /* GPIO_DRIVER_GPIO_H_ */

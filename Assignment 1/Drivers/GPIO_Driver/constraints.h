@@ -5,8 +5,8 @@
  *      Author: cnama
  */
 
-#ifndef INC_CONSTRAINTS_H_
-#define INC_CONSTRAINTS_H_
+#ifndef GPIO_DRIVER_CONSTRAINTS_H_
+#define GPIO_DRIVER_CONSTRAINTS_H_
 
 #include "stm32l4xx_hal.h"
 
@@ -535,4 +535,4 @@ uint16_t GPIOC_PIN_SETUP_VALS[][FIELD_TOTAL] = {
 };
 
 
-#endif /* INC_CONSTRAINTS_H_ */
+#endif /* GPIO_DRIVER_CONSTRAINTS_H_ */
