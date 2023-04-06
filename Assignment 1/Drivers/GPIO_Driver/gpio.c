@@ -10,6 +10,9 @@
 #include <stdio.h>
 
 #define FIELD_TOTAL 8
+#define GPIOA_CLK_EN (0x1<<0)
+#define GPIOB_CLK_EN (0x1<<1)
+#define GPIOC_CLK_EN (0x1<<2)
 
 typedef union vec3_u{
 	struct{
@@ -29,14 +32,17 @@ void GPIO_Init(uint8_t gpio_en, uint16_t num_pins){
 			case GPIO_EN_A:
 				GPIO_Data.GPIO[GPIO_A] = GPIOA;
 				GPIO_Data.GPIO_PINS[GPIO_A] = num_pins;
+				RCC->AHB2ENR |= GPIOA_CLK_EN;
 				break;
 			case GPIO_EN_B:
 				GPIO_Data.GPIO[GPIO_B] = GPIOB;
 				GPIO_Data.GPIO_PINS[GPIO_B] = num_pins;
+				RCC->AHB2ENR |= GPIOB_CLK_EN;
 				break;
 			case GPIO_EN_C:
 				GPIO_Data.GPIO[GPIO_C] = GPIOC;
 				GPIO_Data.GPIO_PINS[GPIO_C] = num_pins;
+				RCC->AHB2ENR |= GPIOC_CLK_EN;
 				break;
 		}
 	}

@@ -23,8 +23,8 @@
 #include "gpio.h"
 
 #define COUNT_MAX 16
-#define NUM_PINS 4
-#define GPIOC_CLK_EN (0x1<<2)
+#define GPIOC_NUM_PINS 4
+
 #define WAIT_TIME 100000
 
 void SystemClock_Config(void);
@@ -33,11 +33,10 @@ int main(void)
 {
   HAL_Init();
   SystemClock_Config();
-  GPIO_Init(GPIO_EN_C, NUM_PINS);
 
-  RCC->AHB2ENR |= GPIOC_CLK_EN;
+  GPIO_Init(GPIO_EN_C, GPIOC_NUM_PINS);
 
-  uint8_t GPIOC_SET_OUTPUT[NUM_PINS] = {0x00, 0x00, 0x00, 0x00};
+  uint8_t GPIOC_SET_OUTPUT[GPIOC_NUM_PINS] = {0x00, 0x00, 0x00, 0x00};
 
   Pin_Config(FIELD_TOTAL, GPIO_C, GPIOC_SET_OUTPUT, GPIOC_PIN_SETUP_VALS);
 
