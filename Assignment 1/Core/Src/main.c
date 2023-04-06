@@ -19,8 +19,8 @@
 
 #include "main.h"
 
-#include "../../Drivers/GPIO_Driver/constraints.h"
-#include "../../Drivers/GPIO_Driver/gpio.h"
+#include "constraints.h"
+#include "gpio.h"
 
 #define COUNT_MAX 16
 #define NUM_PINS 4

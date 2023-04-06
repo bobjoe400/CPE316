@@ -4,7 +4,7 @@
  *  Created on: Apr 5, 2023
  *      Author: cnama
  */
-#include "../../Drivers/GPIO_Driver/gpio.h"
+#include "gpio.h"
 
 #include <string.h>
 #include <stdio.h>
