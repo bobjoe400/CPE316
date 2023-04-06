@@ -19,10 +19,10 @@
 
 #include "main.h"
 #include "gpio.h"
-#include "contraints.h"
+#include "constraints.h"
 
 #define COUNT_MAX 16
-#define NUM_LEDS 4
+#define NUM_PINS 4
 #define GPIOC_CLK_EN (0x1<<2)
 #define WAIT_TIME 100000
 
@@ -32,11 +32,13 @@ int main(void)
 {
   HAL_Init();
   SystemClock_Config();
-  GPIO_Init(GPIO_EN_C);
+  GPIO_Init(GPIO_EN_C, NUM_PINS);
 
   RCC->AHB2ENR |= GPIOC_CLK_EN;
 
-  Pin_Config(NUM_LEDS, NUM_SET, GPIO_C, SETUP_PINS_POS);
+  uint8_t GPIOC_SET_OUTPUT[NUM_PINS] = {0b0, 0b0, 0b0, 0b0};
+
+  Pin_Config(FIELD_TOTAL, GPIO_C, GPIOC_SET_OUTPUT, GPIOC_PIN_SETUP_VALS);
 
   uint8_t counter = 0;
   while (1)
