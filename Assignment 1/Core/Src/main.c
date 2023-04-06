@@ -33,21 +33,25 @@ int main(void)
 {
   HAL_Init();
   SystemClock_Config();
+  GPIO_Driver_Init();
 
-  GPIO_Init(GPIO_EN_C, GPIOC_NUM_PINS);
+  GPIO_Port_Enable(GPIO_EN_C, GPIOC_NUM_PINS);
 
   uint8_t GPIOC_SET_OUTPUT[GPIOC_NUM_PINS] = {0x00, 0x00, 0x00, 0x00};
 
-  Pin_Config(FIELD_TOTAL, GPIO_C, GPIOC_SET_OUTPUT, GPIOC_PIN_SETUP_VALS);
+  GPIO_Port_Pin_Config(FIELD_TOTAL, GPIO_C, GPIOC_SET_OUTPUT, GPIOC_PIN_SETUP_VALS);
 
   uint8_t counter = 0;
   while (1)
   {
-	  GPIO_Get(GPIO_C)->ODR = counter;
+	  GPIO_Port_Get(GPIO_C)->ODR = counter;
 	  for(int i = 0; i < WAIT_TIME; i++);
 	  counter++;
 
 	  if(counter== COUNT_MAX){
+		  GPIO_Port_Disable(GPIO_C);
+		  for(int i = 0; i < 3*WAIT_TIME; i++);
+		  GPIO_Port_Enable(GPIO_EN_C, GPIOC_NUM_PINS);
 		  counter = 0;
 	  }
   }
