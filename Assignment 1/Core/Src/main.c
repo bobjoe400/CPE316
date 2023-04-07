@@ -18,12 +18,9 @@
 /* USER CODE END Header */
 
 #include "main.h"
-
-#include "constraints.h"
 #include "gpio.h"
 
 #define COUNT_MAX 16
-#define GPIOC_NUM_PINS 4
 
 #define WAIT_TIME 100000
 
@@ -35,11 +32,9 @@ int main(void)
   SystemClock_Config();
   GPIO_Driver_Init();
 
-  GPIO_Port_Enable(GPIO_EN_C, GPIOC_NUM_PINS);
+  GPIO_Port_Enable(GPIO_EN_C);
 
-  uint8_t GPIOC_SET_OUTPUT[GPIOC_NUM_PINS] = {0x00, 0x00, 0x00, 0x00};
-
-  GPIO_Port_Pin_Config(FIELD_TOTAL, GPIO_C, GPIOC_SET_OUTPUT, GPIOC_PIN_SETUP_VALS);
+  GPIO_Port_Pin_Config(GPIO_C);
 
   uint8_t counter = 0;
   while (1)
@@ -51,7 +46,7 @@ int main(void)
 	  if(counter== COUNT_MAX){
 		  GPIO_Port_Disable(GPIO_C);
 		  for(int i = 0; i < 3*WAIT_TIME; i++);
-		  GPIO_Port_Enable(GPIO_EN_C, GPIOC_NUM_PINS);
+		  GPIO_Port_Enable(GPIO_EN_C);
 		  counter = 0;
 	  }
   }
