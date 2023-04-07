@@ -178,7 +178,7 @@ void GPIO_Port_Pin_Config(uint8_t gpio_sel){
 		  GPIO_Config.Setup_Data_Array[setup_field] += GPIO_PIN_SETUP_VALS[gpio_sel][pin_num][setup_field]; 										//per the library, each of the fields are
 		} 	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  										//already shifted
 
-		GPIO_Config.array[setup_field] = (GPIO_PIN_SETUP_VALS[gpio_sel][pin_num][setup_field] & GPIO_DATA.GPIO_HiLo_Output[gpio_sel][pin_num]); 	//only add to the ODR_SET value if we've
+		GPIO_Config.Setup_Data_Array[setup_field] = (GPIO_PIN_SETUP_VALS[gpio_sel][pin_num][setup_field] & GPIO_DATA.GPIO_HiLo_Output[gpio_sel][pin_num]); 	//only add to the ODR_SET value if we've
 	}																																				//enabled output initialization
 
 	GPIO_to_Set_Up->MODER 	&= 	~(GPIO_Config.Setup_Data_Struct.MODER_MASK);
