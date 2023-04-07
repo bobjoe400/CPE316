@@ -5,8 +5,8 @@
  *      Author: Cooper Floyd Mattern
  */
 
-#ifndef GPIO_DRIVER_CONSTRAINTS_H_
-#define GPIO_DRIVER_CONSTRAINTS_H_
+#ifndef GPIO_SETUP_CONSTRAINTS_H_
+#define GPIO_SETUP_CONSTRAINTS_H_
 
 #include "stm32l4xx_hal.h"
 
@@ -18,26 +18,26 @@
 /*---------------------------------------------------GPIO A----------------------------------------------------------*/
 
 /*
- * UNCOMMENT LINES TO DETERMINE HOW MANY PINS WIL BE ENABLED
+ * UNCOMMENT LINES TO ENABLE PIN
  * SET TO 0x01 IF PIN WILL BE SET HIGH ON INITIALIZATION, OTHERWISE 0x00
  */
 uint8_t GPIOA_PIN_HILO_ENABLE[] = {
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00
+//	/*PIN 0*/			0x00,
+//	/*PIN 1*/			0x00,
+//	/*PIN 2*/			0x00,
+//	/*PIN 3*/			0x00,
+//	/*PIN 4*/			0x00,
+//	/*PIN 5*/			0x00,
+//	/*PIN 6*/			0x00,
+//	/*PIN 7*/			0x00,
+//	/*PIN 8*/			0x00,
+//	/*PIN 9*/			0x00,
+//	/*PIN 10*/			0x00,
+//	/*PIN 11*/			0x00,
+//	/*PIN 12*/			0x00,
+//	/*PIN 13*/			0x00,
+//	/*PIN 14*/			0x00,
+//	/*PIN 15*/			0x00
 };
 
 #define GPIOA_NUM_PINS GPIO_NUM_PINS(GPIOA_PIN_HILO_ENABLE)
@@ -274,26 +274,26 @@ enum GPOIA_ENUM	{
 /*---------------------------------------------------GPIO B----------------------------------------------------------*/
 
 /*
- * UNCOMMENT LINES TO DETERMINE HOW MANY PINS WIL BE ENABLED
+ * UNCOMMENT LINES TO ENABLE PIN
  * SET TO 0x01 IF PIN WILL BE SET HIGH ON INITIALIZATION, OTHERWISE 0x00
  */
 uint8_t GPIOB_PIN_HILO_ENABLE[] = {
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00
+//	/*PIN 0*/			0x00,
+//	/*PIN 1*/			0x00,
+//	/*PIN 2*/			0x00,
+//	/*PIN 3*/			0x00,
+//	/*PIN 4*/			0x00,
+//	/*PIN 5*/			0x00,
+//	/*PIN 6*/			0x00,
+//	/*PIN 7*/			0x00,
+//	/*PIN 8*/			0x00,
+//	/*PIN 9*/			0x00,
+//	/*PIN 10*/			0x00,
+//	/*PIN 11*/			0x00,
+//	/*PIN 12*/			0x00,
+//	/*PIN 13*/			0x00,
+//	/*PIN 14*/			0x00,
+//	/*PIN 15*/			0x00
 };
 
 #define GPIOB_NUM_PINS GPIO_NUM_PINS(GPIOB_PIN_HILO_ENABLE)
@@ -530,26 +530,26 @@ enum GPIOB_ENUM	{
 /*---------------------------------------------------GPIO C----------------------------------------------------------*/
 
 /*
- * UNCOMMENT LINES TO DETERMINE HOW MANY PINS WIL BE ENABLED
+ * UNCOMMENT LINES TO ENABLE PIN
  * SET TO 0x01 IF PIN WILL BE SET HIGH ON INITIALIZATION, OTHERWISE 0x00
  */
 uint8_t GPIOC_PIN_HILO_ENABLE[] = {
-					0x00,
-					0x00,
-					0x00,
-					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00,
-//					0x00
+	/*PIN 0*/			0x00,
+	/*PIN 1*/			0x00,
+	/*PIN 2*/			0x00,
+	/*PIN 3*/			0x00,
+//	/*PIN 4*/			0x00,
+//	/*PIN 5*/			0x00,
+//	/*PIN 6*/			0x00,
+//	/*PIN 7*/			0x00,
+//	/*PIN 8*/			0x00,
+//	/*PIN 9*/			0x00,
+//	/*PIN 10*/			0x00,
+//	/*PIN 11*/			0x00,
+//	/*PIN 12*/			0x00,
+//	/*PIN 13*/			0x00,
+//	/*PIN 14*/			0x00,
+//	/*PIN 15*/			0x00
 };
 
 #define GPIOC_NUM_PINS GPIO_NUM_PINS(GPIOC_PIN_HILO_ENABLE)
@@ -839,4 +839,4 @@ uint32_t GPIO_PIN_SETUP_VALS[NUM_GPIO][PIN_TOTAL][FIELD_TOTAL] = {
 			{GPIOC_15_MOD_MASK, GPIOC_15_MOD_SET, GPIOC_15_OT_SET, GPIOC_15_OSPD_MASK, GPIOC_15_OSPD_SET, GPIOC_15_PUPD_MASK, GPIOC_15_PUPD_SET, GPIOC_15_ODR_SET}
 		}
 };
-#endif /* GPIO_DRIVER_CONSTRAINTS_H_ */
+#endif /* GPIO_SETUP_CONSTRAINTS_H_ */

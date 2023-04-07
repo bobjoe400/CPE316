@@ -5,8 +5,8 @@
  *      Author: Cooper Floyd Mattern
  */
 
-#ifndef GPIO_DRIVER_GPIO_H_
-#define GPIO_DRIVER_GPIO_H_
+#ifndef GPIO_SETUP_GPIO_H_
+#define GPIO_SETUP_GPIO_H_
 #include "stm32l4xx_hal.h"
 #include <stdint.h>
 
@@ -19,4 +19,4 @@ void GPIO_Port_Disable(uint8_t gpio_sel);
 GPIO_TypeDef* GPIO_Port_Get(uint8_t gpio_sel);
 void GPIO_Port_Pin_Config(uint8_t gpio_sel);
 
-#endif /* GPIO_DRIVER_GPIO_H_ */
+#endif /* GPIO_SETUP_GPIO_H_ */

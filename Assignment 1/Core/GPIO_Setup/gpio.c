@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
+
 #define GPIOA_CLK_EN (0x1<<0)
 #define GPIOB_CLK_EN (0x1<<1)
 #define GPIOC_CLK_EN (0x1<<2)
