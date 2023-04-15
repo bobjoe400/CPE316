@@ -21,26 +21,27 @@
  * UNCOMMENT LINES TO ENABLE PIN
  * SET TO 0x01 IF PIN WILL BE SET HIGH ON INITIALIZATION, OTHERWISE 0x00
  */
-uint8_t GPIOA_PIN_HILO_ENABLE[] = {
-//	/*PIN 0*/			0x00,
-//	/*PIN 1*/			0x00,
-//	/*PIN 2*/			0x00,
-//	/*PIN 3*/			0x00,
-//	/*PIN 4*/			0x00,
-//	/*PIN 5*/			0x00,
-//	/*PIN 6*/			0x00,
-//	/*PIN 7*/			0x00,
-//	/*PIN 8*/			0x00,
-//	/*PIN 9*/			0x00,
-//	/*PIN 10*/			0x00,
-//	/*PIN 11*/			0x00,
-//	/*PIN 12*/			0x00,
-//	/*PIN 13*/			0x00,
-//	/*PIN 14*/			0x00,
-//	/*PIN 15*/			0x00
+uint16_t GPIOA_PIN_ENABLE[] = {
+//	/*PIN 0*/			GPIO_PIN_0,
+//	/*PIN 1*/			GPIO_PIN_1,
+//	/*PIN 2*/			GPIO_PIN_2,
+//	/*PIN 3*/			GPIO_PIN_3,
+//	/*PIN 4*/			GPIO_PIN_4,
+//	/*PIN 5*/			GPIO_PIN_5,
+//	/*PIN 6*/			GPIO_PIN_6,
+//	/*PIN 7*/			GPIO_PIN_7,
+//	/*PIN 8*/			GPIO_PIN_8,
+//	/*PIN 9*/			GPIO_PIN_9,
+//	/*PIN 10*/			GPIO_PIN_10,
+//	/*PIN 11*/			GPIO_PIN_11,
+//	/*PIN 12*/			GPIO_PIN_12,
+//	/*PIN 13*/			GPIO_PIN_13,
+//	/*PIN 14*/			GPIO_PIN_14,
+//	/*PIN 15*/			GPIO_PIN_15
 };
 
-#define GPIOA_NUM_PINS GPIO_NUM_PINS(GPIOA_PIN_HILO_ENABLE)
+
+#define GPIOA_NUM_PINS GPIO_NUM_PINS(GPIOA_PIN_ENABLE)
 
 /*
  * USE THIS SECTION TO EDIT THE VALUES THAT WILL BE SET BY THE DRIVER UPON PORT ENABLE
@@ -277,26 +278,27 @@ enum GPOIA_ENUM	{
  * UNCOMMENT LINES TO ENABLE PIN
  * SET TO 0x01 IF PIN WILL BE SET HIGH ON INITIALIZATION, OTHERWISE 0x00
  */
-uint8_t GPIOB_PIN_HILO_ENABLE[] = {
-	/*PIN 0*/			0x01,
-	/*PIN 1*/			0x01,
-	/*PIN 2*/			0x01,
-	/*PIN 3*/			0x01,
-//	/*PIN 4*/			0x00,
-//	/*PIN 5*/			0x00,
-//	/*PIN 6*/			0x00,
-//	/*PIN 7*/			0x00,
-//	/*PIN 8*/			0x00,
-//	/*PIN 9*/			0x00,
-//	/*PIN 10*/			0x00,
-//	/*PIN 11*/			0x00,
-//	/*PIN 12*/			0x00,
-//	/*PIN 13*/			0x00,
-//	/*PIN 14*/			0x00,
-//	/*PIN 15*/			0x00
+uint16_t GPIOB_PIN_ENABLE[] = {
+//	/*PIN 0*/			GPIO_PIN_0,
+//	/*PIN 1*/			GPIO_PIN_1,
+//	/*PIN 2*/			GPIO_PIN_2,
+//	/*PIN 3*/			GPIO_PIN_3,
+//	/*PIN 4*/			GPIO_PIN_4,
+//	/*PIN 5*/			GPIO_PIN_5,
+//	/*PIN 6*/			GPIO_PIN_6,
+//	/*PIN 7*/			GPIO_PIN_7,
+//	/*PIN 8*/			GPIO_PIN_8,
+//	/*PIN 9*/			GPIO_PIN_9,
+//	/*PIN 10*/			GPIO_PIN_10,
+//	/*PIN 11*/			GPIO_PIN_11,
+//	/*PIN 12*/			GPIO_PIN_12,
+//	/*PIN 13*/			GPIO_PIN_13,
+//	/*PIN 14*/			GPIO_PIN_14,
+//	/*PIN 15*/			GPIO_PIN_15
 };
 
-#define GPIOB_NUM_PINS GPIO_NUM_PINS(GPIOB_PIN_HILO_ENABLE)
+
+#define GPIOB_NUM_PINS GPIO_NUM_PINS(GPIOB_PIN_ENABLE)
 
 /*
  * USE THIS SECTION TO EDIT THE VALUES THAT WILL BE SET BY THE DRIVER UPON PORT ENABLE
@@ -533,26 +535,26 @@ enum GPIOB_ENUM	{
  * UNCOMMENT LINES TO ENABLE PIN
  * SET TO 0x01 IF PIN WILL BE SET HIGH ON INITIALIZATION, OTHERWISE 0x00
  */
-uint8_t GPIOC_PIN_HILO_ENABLE[] = {
-	/*PIN 0*/			0x00,
-	/*PIN 1*/			0x00,
-	/*PIN 2*/			0x00,
-	/*PIN 3*/			0x00,
-//	/*PIN 4*/			0x00,
-//	/*PIN 5*/			0x00,
-//	/*PIN 6*/			0x00,
-//	/*PIN 7*/			0x00,
-//	/*PIN 8*/			0x00,
-//	/*PIN 9*/			0x00,
-//	/*PIN 10*/			0x00,
-//	/*PIN 11*/			0x00,
-//	/*PIN 12*/			0x00,
-//	/*PIN 13*/			0x00,
-//	/*PIN 14*/			0x00,
-//	/*PIN 15*/			0x00
+uint16_t GPIOC_PIN_ENABLE[] = {
+//	/*PIN 0*/			GPIO_PIN_0,
+//	/*PIN 1*/			GPIO_PIN_1,
+	/*PIN 2*/			GPIO_PIN_2,
+	/*PIN 3*/			GPIO_PIN_3,
+//	/*PIN 4*/			GPIO_PIN_4,
+	/*PIN 5*/			GPIO_PIN_5,
+	/*PIN 6*/			GPIO_PIN_6,
+//	/*PIN 7*/			GPIO_PIN_7,
+//	/*PIN 8*/			GPIO_PIN_8,
+//	/*PIN 9*/			GPIO_PIN_9,
+//	/*PIN 10*/			GPIO_PIN_10,
+//	/*PIN 11*/			GPIO_PIN_11,
+//	/*PIN 12*/			GPIO_PIN_12,
+//	/*PIN 13*/			GPIO_PIN_13,
+//	/*PIN 14*/			GPIO_PIN_14,
+//	/*PIN 15*/			GPIO_PIN_15
 };
 
-#define GPIOC_NUM_PINS GPIO_NUM_PINS(GPIOC_PIN_HILO_ENABLE)
+#define GPIOC_NUM_PINS GPIO_NUM_PINS(GPIOC_PIN_ENABLE)
 
 /*
  * USE THIS SECTION TO EDIT THE VALUES THAT WILL BE SET BY THE DRIVER UPON PORT ENABLE
@@ -594,11 +596,11 @@ enum GPIOC_ENUM	{
 								GPIOC_2_PUPD_MASK	= 	GPIO_OSPEEDR_OSPEED2,
 
 								/*---------------SET BITS-------------------*/
-								GPIOC_2_MOD_SET 	= 	GPIO_MODER_MODE0_Pos,
+								GPIOC_2_MOD_SET 	= 	GPIO_MODER_MODE2_0,
 								GPIOC_2_OT_SET	 	= 	GPIO_OTYPER_OT0_Pos,
 								GPIOC_2_OSPD_SET	= 	GPIO_OSPEEDR_OSPEED0_Pos,
 								GPIOC_2_PUPD_SET 	= 	GPIO_PUPDR_PUPD2_1,
-								GPIOC_2_ODR_SET 	= 	GPIO_ODR_OD2,
+								GPIOC_2_ODR_SET 	= 	0,
 
 						/*-----------------------PIN 3--------------------------*/
 
@@ -608,11 +610,11 @@ enum GPIOC_ENUM	{
 								GPIOC_3_PUPD_MASK	= 	GPIO_OSPEEDR_OSPEED3,
 
 								/*---------------SET BITS-------------------*/
-								GPIOC_3_MOD_SET 	= 	GPIO_MODER_MODE0_Pos,
+								GPIOC_3_MOD_SET 	= 	GPIO_MODER_MODE3_0,
 								GPIOC_3_OT_SET	 	= 	GPIO_OTYPER_OT0_Pos,
 								GPIOC_3_OSPD_SET	= 	GPIO_OSPEEDR_OSPEED0_Pos,
 								GPIOC_3_PUPD_SET	= 	GPIO_PUPDR_PUPD3_1,
-								GPIOC_3_ODR_SET 	= 	GPIO_ODR_OD3,
+								GPIOC_3_ODR_SET 	= 	0,
 
 						/*-----------------------PIN 4--------------------------*/
 
@@ -622,7 +624,7 @@ enum GPIOC_ENUM	{
 								GPIOC_4_PUPD_MASK	= 	GPIO_OSPEEDR_OSPEED4,
 
 								/*---------------SET BITS-------------------*/
-								GPIOC_4_MOD_SET		= 	GPIO_MODER_MODE3_0,
+								GPIOC_4_MOD_SET		= 	GPIO_MODER_MODE4_0,
 								GPIOC_4_OT_SET		= 	GPIO_OTYPER_OT0_Pos,
 								GPIOC_4_OSPD_SET	= 	GPIO_OSPEEDR_OSPEED0_Pos,
 								GPIOC_4_PUPD_SET	= 	GPIO_PUPDR_PUPD4_1,
@@ -636,11 +638,11 @@ enum GPIOC_ENUM	{
 								GPIOC_5_PUPD_MASK	= 	GPIO_OSPEEDR_OSPEED5,
 
 								/*---------------SET BITS-------------------*/
-								GPIOC_5_MOD_SET		= 	GPIO_MODER_MODE3_0,
+								GPIOC_5_MOD_SET		= 	GPIO_MODER_MODE5_0,
 								GPIOC_5_OT_SET		= 	GPIO_OTYPER_OT0_Pos,
 								GPIOC_5_OSPD_SET	= 	GPIO_OSPEEDR_OSPEED0_Pos,
 								GPIOC_5_PUPD_SET	= 	GPIO_PUPDR_PUPD5_1,
-								GPIOC_5_ODR_SET		= 	GPIO_ODR_OD5,
+								GPIOC_5_ODR_SET		= 	0,
 
 						/*-----------------------PIN 6--------------------------*/
 
@@ -650,11 +652,11 @@ enum GPIOC_ENUM	{
 								GPIOC_6_PUPD_MASK	= 	GPIO_OSPEEDR_OSPEED6,
 
 								/*---------------SET BITS-------------------*/
-								GPIOC_6_MOD_SET		= 	GPIO_MODER_MODE3_0,
+								GPIOC_6_MOD_SET		= 	GPIO_MODER_MODE6_0,
 								GPIOC_6_OT_SET		= 	GPIO_OTYPER_OT0_Pos,
 								GPIOC_6_OSPD_SET	= 	GPIO_OSPEEDR_OSPEED0_Pos,
 								GPIOC_6_PUPD_SET	= 	GPIO_PUPDR_PUPD6_1,
-								GPIOC_6_ODR_SET		= 	GPIO_ODR_OD6,
+								GPIOC_6_ODR_SET		= 	0,
 
 						/*-----------------------PIN 7--------------------------*/
 
@@ -664,7 +666,7 @@ enum GPIOC_ENUM	{
 								GPIOC_7_PUPD_MASK	= 	GPIO_OSPEEDR_OSPEED7,
 
 								/*---------------SET BITS-------------------*/
-								GPIOC_7_MOD_SET		= 	GPIO_MODER_MODE3_0,
+								GPIOC_7_MOD_SET		= 	GPIO_MODER_MODE7_0,
 								GPIOC_7_OT_SET		= 	GPIO_OTYPER_OT0_Pos,
 								GPIOC_7_OSPD_SET	= 	GPIO_OSPEEDR_OSPEED0_Pos,
 								GPIOC_7_PUPD_SET	= 	GPIO_PUPDR_PUPD7_1,
@@ -678,7 +680,7 @@ enum GPIOC_ENUM	{
 								GPIOC_8_PUPD_MASK	= 	GPIO_OSPEEDR_OSPEED8,
 
 								/*---------------SET BITS-------------------*/
-								GPIOC_8_MOD_SET		= 	GPIO_MODER_MODE3_0,
+								GPIOC_8_MOD_SET		= 	GPIO_MODER_MODE8_0,
 								GPIOC_8_OT_SET		= 	GPIO_OTYPER_OT0_Pos,
 								GPIOC_8_OSPD_SET	= 	GPIO_OSPEEDR_OSPEED0_Pos,
 								GPIOC_8_PUPD_SET	= 	GPIO_PUPDR_PUPD8_1,
@@ -692,7 +694,7 @@ enum GPIOC_ENUM	{
 								GPIOC_9_PUPD_MASK	= 	GPIO_OSPEEDR_OSPEED9,
 
 								/*---------------SET BITS-------------------*/
-								GPIOC_9_MOD_SET		= 	GPIO_MODER_MODE3_0,
+								GPIOC_9_MOD_SET		= 	GPIO_MODER_MODE9_0,
 								GPIOC_9_OT_SET		= 	GPIO_OTYPER_OT0_Pos,
 								GPIOC_9_OSPD_SET	= 	GPIO_OSPEEDR_OSPEED0_Pos,
 								GPIOC_9_PUPD_SET	= 	GPIO_PUPDR_PUPD9_1,
@@ -706,7 +708,7 @@ enum GPIOC_ENUM	{
 								GPIOC_10_PUPD_MASK	= 	GPIO_OSPEEDR_OSPEED10,
 
 								/*---------------SET BITS-------------------*/
-								GPIOC_10_MOD_SET	= 	GPIO_MODER_MODE3_0,
+								GPIOC_10_MOD_SET	= 	GPIO_MODER_MODE10_0,
 								GPIOC_10_OT_SET		= 	GPIO_OTYPER_OT0_Pos,
 								GPIOC_10_OSPD_SET	= 	GPIO_OSPEEDR_OSPEED0_Pos,
 								GPIOC_10_PUPD_SET	= 	GPIO_PUPDR_PUPD10_1,

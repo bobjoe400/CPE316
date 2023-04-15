@@ -11,6 +11,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <math.h>
 #include "../../BSP/GPIO_Setup/constraints.h"
 
 
@@ -31,7 +32,7 @@ typedef struct GPIO_SET{
 	GPIO_TypeDef* GPIO_Pointer[NUM_GPIO];
 	uint8_t GPIO_Enable[NUM_GPIO];
 	uint16_t GPIO_Pins[NUM_GPIO];
-	uint8_t* GPIO_HiLo_Output[NUM_GPIO];
+	uint16_t* GPIO_Pin_Enable[NUM_GPIO];
 }GPIO_Set;
 
 static GPIO_Set GPIO_DATA;
@@ -72,21 +73,21 @@ void GPIO_Port_Enable(uint8_t gpio_en){
 				GPIO_DATA.GPIO_Pointer[GPIO_A] = GPIOA;
 				GPIO_DATA.GPIO_Enable[GPIO_A] = 0x1;
 				GPIO_DATA.GPIO_Pins[GPIO_A] = GPIOA_NUM_PINS;
-				GPIO_DATA.GPIO_HiLo_Output[GPIO_A] = GPIOA_PIN_HILO_ENABLE;
+				GPIO_DATA.GPIO_Pin_Enable[GPIO_A] = GPIOA_PIN_ENABLE;
 				RCC->AHB2ENR |= GPIOA_CLK_EN;
 				break;
 			case GPIO_EN_B:
 				GPIO_DATA.GPIO_Pointer[GPIO_B] = GPIOB;
 				GPIO_DATA.GPIO_Enable[GPIO_B] = 0x1;
 				GPIO_DATA.GPIO_Pins[GPIO_B] = GPIOB_NUM_PINS;
-				GPIO_DATA.GPIO_HiLo_Output[GPIO_B] = GPIOB_PIN_HILO_ENABLE;
+				GPIO_DATA.GPIO_Pin_Enable[GPIO_B] = GPIOB_PIN_ENABLE;
 				RCC->AHB2ENR |= GPIOB_CLK_EN;
 				break;
 			case GPIO_EN_C:
 				GPIO_DATA.GPIO_Pointer[GPIO_C] = GPIOC;
 				GPIO_DATA.GPIO_Enable[GPIO_C] = 0x1;
 				GPIO_DATA.GPIO_Pins[GPIO_C] = GPIOC_NUM_PINS;
-				GPIO_DATA.GPIO_HiLo_Output[GPIO_B] = GPIOB_PIN_HILO_ENABLE;
+				GPIO_DATA.GPIO_Pin_Enable[GPIO_C] = GPIOC_PIN_ENABLE;
 				RCC->AHB2ENR |= GPIOC_CLK_EN;
 				break;
 		}
@@ -148,24 +149,6 @@ GPIO_TypeDef* GPIO_Port_Get(uint8_t gpio_sel){
 	return GPIO_DATA.GPIO_Pointer[gpio_sel];
 }
 
-void GPIO_Port_Pin_Set_Output(SetupData GPIO_Config, GPIO_TypeDef* GPIO_to_Set_Up){
-	GPIO_to_Set_Up->MODER 	&= 	~(GPIO_Config.Setup_Data_Struct.MODER_MASK);
-	GPIO_to_Set_Up->MODER 	|= 	  GPIO_Config.Setup_Data_Struct.MODER_SET;
-	GPIO_to_Set_Up->OTYPER 	|= 	  GPIO_Config.Setup_Data_Struct.OTYPER_SET;
-	GPIO_to_Set_Up->OSPEEDR &= 	~(GPIO_Config.Setup_Data_Struct.OSPEEDR_MASK);
-	GPIO_to_Set_Up->OSPEEDR |= 	  GPIO_Config.Setup_Data_Struct.OSPEEDR_SET;
-	GPIO_to_Set_Up->PUPDR 	&= 	~(GPIO_Config.Setup_Data_Struct.PUPDR_MASK);
-	GPIO_to_Set_Up->PUPDR 	|= 	  GPIO_Config.Setup_Data_Struct.PUPDR_SET;
-	GPIO_to_Set_Up->ODR		|=	 (GPIO_Config.Setup_Data_Struct.ODR_SET);
-}
-
-void GPIO_Port_Pin_Set_Input(SetupData GPIO_Config, GPIO_TypeDef* GPIO_to_Set_Up){
-	GPIO_to_Set_Up->MODER 	&= 	~(GPIO_Config.Setup_Data_Struct.MODER_MASK);
-	GPIO_to_Set_Up->MODER 	|= 	  GPIO_Config.Setup_Data_Struct.MODER_SET;
-	GPIO_to_Set_Up->PUPDR 	&= 	~(GPIO_Config.Setup_Data_Struct.PUPDR_MASK);
-	GPIO_to_Set_Up->PUPDR 	|= 	  GPIO_Config.Setup_Data_Struct.PUPDR_SET;
-}
-
 /*	INPUTS:
  * 		field_total: total number of fields to be set on that port (this is defined in constraints.h)
  * 		gpio_sel: the GPIO port to configure
@@ -181,7 +164,7 @@ void GPIO_Port_Pin_Set_Input(SetupData GPIO_Config, GPIO_TypeDef* GPIO_to_Set_Up
  *		finally sets those values
  */
 
-void GPIO_Port_Pin_Config(uint8_t gpio_sel, uint8_t io){
+void GPIO_Port_Pin_Config(uint8_t gpio_sel){
 	SetupData GPIO_Config;
 	GPIO_TypeDef* GPIO_to_Set_Up;
 	if((GPIO_to_Set_Up = GPIO_Port_Get(gpio_sel)) == (GPIO_TypeDef*) NULL){
@@ -192,15 +175,20 @@ void GPIO_Port_Pin_Config(uint8_t gpio_sel, uint8_t io){
 
 	memset(&GPIO_Config, 0, sizeof(SetupData));
 
-	for(uint16_t pin_num = 0; pin_num< num_pins; pin_num++){
+	for(uint16_t pin_num = 0; pin_num < num_pins; pin_num++){
+		uint16_t pin = log2_32(GPIO_DATA.GPIO_Pin_Enable[gpio_sel][pin_num]);
 		uint16_t setup_field  =  0;
-		for(; setup_field < FIELD_TOTAL-1; setup_field++){
-		  GPIO_Config.Setup_Data_Array[setup_field] += GPIO_PIN_SETUP_VALS[gpio_sel][pin_num][setup_field]; 										//per the library, each of the fields are
+		for(; setup_field < FIELD_TOTAL; setup_field++){
+		  GPIO_Config.Setup_Data_Array[setup_field] += GPIO_PIN_SETUP_VALS[gpio_sel][pin][setup_field]; 										//per the library, each of the fields are
 		} 	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  										//already shifted
+	}
 
-		GPIO_Config.Setup_Data_Array[setup_field] = (GPIO_PIN_SETUP_VALS[gpio_sel][pin_num][setup_field] & GPIO_DATA.GPIO_HiLo_Output[gpio_sel][pin_num]); 	//only add to the ODR_SET value if we've
-	}																																				//enabled output initialization
-
-	GPIO_Port_Pin_Set_Output(GPIO_Config, GPIO_to_Set_Up);
-
+	GPIO_to_Set_Up->MODER 	&= 	~(GPIO_Config.Setup_Data_Struct.MODER_MASK);
+	GPIO_to_Set_Up->MODER 	|= 	  GPIO_Config.Setup_Data_Struct.MODER_SET;
+	GPIO_to_Set_Up->OTYPER 	|= 	  GPIO_Config.Setup_Data_Struct.OTYPER_SET;
+	GPIO_to_Set_Up->OSPEEDR &= 	~(GPIO_Config.Setup_Data_Struct.OSPEEDR_MASK);
+	GPIO_to_Set_Up->OSPEEDR |= 	  GPIO_Config.Setup_Data_Struct.OSPEEDR_SET;
+	GPIO_to_Set_Up->PUPDR 	&= 	~(GPIO_Config.Setup_Data_Struct.PUPDR_MASK);
+	GPIO_to_Set_Up->PUPDR 	|= 	  GPIO_Config.Setup_Data_Struct.PUPDR_SET;
+	GPIO_to_Set_Up->ODR		|=	 (GPIO_Config.Setup_Data_Struct.ODR_SET);
 }

@@ -20,6 +20,9 @@
 #include "main.h"
 #include "gpio.h"
 
+#define COUNT_MAX 16
+#define WAIT_TIME 100000
+
 void SystemClock_Config(void);
 
 int main(void)
@@ -29,13 +32,27 @@ int main(void)
   SystemClock_Config();
 
   GPIO_Driver_Init();
-  GPIO_Port_Enable(GPIO_EN_B | GPIO_EN_C);
+  GPIO_Port_Enable(GPIO_EN_C);
+  GPIO_Port_Pin_Config(GPIO_C);
 
-
-
+  uint32_t counter = 0;
+  uint8_t low_mask = 0b1100;
+  uint8_t up_mask = 0b1100000;
   while (1)
   {
+	  uint32_t bits = (counter<<2) & low_mask;
+	  bits += (counter<<3) & up_mask;
+	  GPIO_Port_Get(GPIO_C)->ODR = bits;
+	  for(int i = 0; i < WAIT_TIME; i++);
+	  counter++;
 
+	  if(counter== COUNT_MAX){
+		  GPIO_Port_Disable(GPIO_C);
+		  for(int i = 0; i < 3*WAIT_TIME; i++);
+		  GPIO_Port_Enable(GPIO_EN_C);
+		  GPIO_Port_Get(GPIO_C)->ODR = 0;
+		  counter = 0;
+	  }
   }
 
 }
