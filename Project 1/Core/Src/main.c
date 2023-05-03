@@ -26,8 +26,11 @@
 void SystemClock_Config(void);
 
 uint32_t lut_ind = 0;
-uint32_t lut_ind_inc_val = 3;
+uint32_t lut_ind_inc_val = 1;
 uint32_t val_to_write = 0;
+uint32_t duty_cycle = 50;
+uint32_t wave_sel = 4;
+uint32_t* waveform[3] = {SIN_LUT, TRI_LUT, SAW_LUT};
 
 int main(void)
   {
@@ -36,8 +39,8 @@ int main(void)
   DAC_init();
   // Setup GPIOC as Output
   RCC->AHB2ENR |= RCC_AHB2ENR_GPIOCEN;
-  GPIOC->MODER &= ~(GPIO_MODER_MODE0);
-  GPIOC->MODER |= (GPIO_MODER_MODE0_0);
+  GPIOC->MODER &= ~(GPIO_MODER_MODE5);
+  GPIOC->MODER |= (GPIO_MODER_MODE5_0);
   GPIOC->ODR = 0;
   // PA8 Clock Signal
   // Enable MCO, select MSI (4 MHz source)
@@ -68,22 +71,70 @@ int main(void)
   __enable_irq();
   while (1)
   {
-	  if(lut_ind > NUM_SAMPLES){
+	  uint32_t key = keypad_read_digits(1);
+	  if(lut_ind >= NUM_SAMPLES){
 		  lut_ind = 0;
 	  }
-	  val_to_write = TRI_LUT[lut_ind];
+	  if(key < 0){
+		  goto set_val;
+	  }
+	  lut_ind = 0;
+	  if(key < 6){
+		  lut_ind_inc_val = key;
+	  } else if(key < 10){
+		  switch(key){
+		  case 6:
+			  wave_sel = SIN;
+			  break;
+		  case 7:
+			  wave_sel = TRI;
+			  break;
+		  case 8:
+			  wave_sel = SAW;
+			  break;
+		  case 9:
+			  wave_sel = SQR;
+			  break;
+		  }
+	  } else if(key > 10){
+		  switch(key){
+		  case STAR:
+			  if(duty_cycle > 10){
+				  duty_cycle-=10;
+			  }
+			  break;
+		  case ZERO_KEY:
+			  duty_cycle = 50;
+			  break;
+		  case HASHTAG:
+			  if(duty_cycle < 90){
+				  duty_cycle+=10;
+			  }
+			  break;
+		  }
+	  }
+set_val:
+	if(wave_sel == 3){
+		if(((lut_ind * 100)/NUM_SAMPLES) < duty_cycle){
+			val_to_write = MAX_3PP;
+		}else{
+			val_to_write = 0;
+		}
+	}else{
+		val_to_write = waveform[wave_sel][lut_ind];
+	}
   }
 }
 void TIM2_IRQHandler (void)
 {
-	GPIOC->ODR = 1;
+	GPIOC->ODR |= (GPIO_ODR_OD5);
 	// Clear Interrupt Flag
 	TIM2->SR &= ~(TIM_SR_CC1IF);
 	TIM2->CCR1 += 107;
 	//Move CCR1 Timer Forwards
 	DAC_write(val_to_write);
 	lut_ind+= lut_ind_inc_val;
-	GPIOC->ODR = 0;
+	GPIOC->ODR &= ~(GPIO_ODR_OD5);
 
 }
 

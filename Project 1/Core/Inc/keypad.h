@@ -37,9 +37,9 @@
 
 #define KEYPAD_DELAY 100000
 
-int keypad_read();
+uint32_t keypad_read();
 void keypad_setup();
-int keypad_read_digits(int ndigits);
+uint32_t keypad_read_digits(uint32_t ndigits);
 
 
 #endif /* INC_KEYPAD_H_ */

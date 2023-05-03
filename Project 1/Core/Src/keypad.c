@@ -5,6 +5,7 @@
  */
 
 #include "keypad.h"
+#include "math.h"
 void keypad_setup()
 {
 	// Column Setup
@@ -41,7 +42,7 @@ void keypad_setup()
 	ROW_PORT->PUPDR |= (GPIO_PUPDR_PUPD0_1 | GPIO_PUPDR_PUPD1_1 | GPIO_PUPDR_PUPD2_1 | GPIO_PUPDR_PUPD3_1);
 }
 
-int keypad_read()
+uint32_t keypad_read()
 {
 	uint16_t col = 0;
 	uint16_t row = 0;
@@ -51,7 +52,7 @@ int keypad_read()
 
 	uint16_t row_val = ROW_PORT->IDR & ROW_MASK;
 
-	int ret_val = NO_KEY;
+	uint32_t ret_val = NO_KEY;
 
 	// Check If Button Pressed
 	if (row_val == 0)
@@ -95,16 +96,16 @@ int keypad_read()
 	// No Button Found
 	return NO_KEY;
 }
-int keypad_read_digits(int ndigits)
+uint32_t keypad_read_digits(uint32_t ndigits)
 {
-	int i, val, base;
-	int ret = 0;
+	uint32_t i, val;
+	uint32_t ret = 0;
 	for (i = 0; i < ndigits; i++)
 	{
-		int wait = 0;
+		uint32_t wait = 0;
 
 		// Calculate place value
-		int base = pow(10, (ndigits - i - 1));
+		uint32_t base = pow(10, (ndigits - i - 1));
 
 		// Wait for Valid Input
 		while ((val = keypad_read()) == NO_KEY);
