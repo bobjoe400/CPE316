@@ -108,11 +108,11 @@ uint32_t keypad_read_digits(uint32_t ndigits)
 		uint32_t base = pow(10, (ndigits - i - 1));
 
 		// Wait for Valid Input
-		while ((val = keypad_read()) == NO_KEY);
+		/*while ((*/val = keypad_read()/*) == NO_KEY)*/;
 
 		ret += base * val;
 		// Wait a bit till next value
-		for (wait = 0; wait < KEYPAD_DELAY; wait++);
+
 	}
 	return ret;
 }

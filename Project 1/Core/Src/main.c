@@ -22,6 +22,7 @@
 #include "keypad.h"
 #include "func_gen.h"
 
+#define CLOCK_CYCLES 128
 
 void SystemClock_Config(void);
 
@@ -29,19 +30,19 @@ uint32_t lut_ind = 0;
 uint32_t lut_ind_inc_val = 1;
 uint32_t val_to_write = 0;
 uint32_t duty_cycle = 50;
-uint32_t wave_sel = 4;
+uint32_t wave_sel = 3;
 uint32_t* waveform[3] = {SIN_LUT, TRI_LUT, SAW_LUT};
 
-int main(void)
-  {
+int main(void){
   HAL_Init();
   SystemClock_Config();
   DAC_init();
+  keypad_setup();
   // Setup GPIOC as Output
   RCC->AHB2ENR |= RCC_AHB2ENR_GPIOCEN;
-  GPIOC->MODER &= ~(GPIO_MODER_MODE5);
-  GPIOC->MODER |= (GPIO_MODER_MODE5_0);
-  GPIOC->ODR = 0;
+  GPIOC->MODER &= ~(GPIO_MODER_MODE3);
+  GPIOC->MODER |= (GPIO_MODER_MODE3_0);
+  GPIOC->ODR &= ~(GPIO_ODR_OD3);
   // PA8 Clock Signal
   // Enable MCO, select MSI (4 MHz source)
   RCC->CFGR = ((RCC->CFGR & ~(RCC_CFGR_MCOSEL)) | (RCC_CFGR_MCOSEL_0));
@@ -62,7 +63,7 @@ int main(void)
   // Set ARR to 5khz Period
   TIM2->ARR = 0xFFFFFFFF;
   // Set CCR to 1/4 of that period
-  TIM2->CCR1 = 107-1;
+  TIM2->CCR1 = CLOCK_CYCLES - 1;
   // Start Couting
   TIM2->CR1 |= (TIM_CR1_CEN);
   /* USER CODE END 2 */
@@ -71,13 +72,15 @@ int main(void)
   __enable_irq();
   while (1)
   {
-	  uint32_t key = keypad_read_digits(1);
+	  uint32_t key = keypad_read();
 	  if(lut_ind >= NUM_SAMPLES){
 		  lut_ind = 0;
 	  }
-	  if(key < 0){
+
+	  if(key < 1){
 		  goto set_val;
 	  }
+	  for (int wait = 0; wait < KEYPAD_DELAY; wait++);
 	  lut_ind = 0;
 	  if(key < 6){
 		  lut_ind_inc_val = key;
@@ -96,7 +99,7 @@ int main(void)
 			  wave_sel = SQR;
 			  break;
 		  }
-	  } else if(key > 10){
+	  } else if(key > 9){
 		  switch(key){
 		  case STAR:
 			  if(duty_cycle > 10){
@@ -125,17 +128,16 @@ set_val:
 	}
   }
 }
-void TIM2_IRQHandler (void)
+void TIM2_IRQHandler(void)
 {
-	GPIOC->ODR |= (GPIO_ODR_OD5);
+	GPIOC->ODR |= (GPIO_ODR_OD3);
 	// Clear Interrupt Flag
 	TIM2->SR &= ~(TIM_SR_CC1IF);
-	TIM2->CCR1 += 107;
+	TIM2->CCR1 += CLOCK_CYCLES;
 	//Move CCR1 Timer Forwards
 	DAC_write(val_to_write);
 	lut_ind+= lut_ind_inc_val;
-	GPIOC->ODR &= ~(GPIO_ODR_OD5);
-
+	GPIOC->ODR &= ~(GPIO_ODR_OD3);
 }
 
 /**

@@ -10,15 +10,15 @@
 
 #include "stm32l4xx_hal.h"
 
-#define COL_PORT GPIOB
+#define COL_PORT GPIOC
 
 #define COL_AHB AHB2ENR
 
-#define COL_AHB_PORT RCC_AHB2ENR_GPIOBEN
+#define COL_AHB_PORT RCC_AHB2ENR_GPIOCEN
 
-#define ROW_PORT GPIOC
+#define ROW_PORT GPIOB
 #define ROW_AHB AHB2ENR
-#define ROW_AHB_PORT RCC_AHB2ENR_GPIOCEN
+#define ROW_AHB_PORT RCC_AHB2ENR_GPIOBEN
 
 #define NUM_ROWS 4
 #define NUM_COLS 3
@@ -33,7 +33,7 @@
 #define HASHTAG 12
 #define STAR 10
 #define ZERO_KEY 11
-#define NO_KEY -1
+#define NO_KEY 0
 
 #define KEYPAD_DELAY 100000
 
