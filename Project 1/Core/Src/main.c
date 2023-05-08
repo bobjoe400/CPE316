@@ -34,100 +34,109 @@ uint32_t wave_sel = 3;
 uint32_t* waveform[3] = {SIN_LUT, TRI_LUT, SAW_LUT};
 
 int main(void){
-  HAL_Init();
-  SystemClock_Config();
-  DAC_init();
-  keypad_setup();
-  // Setup GPIOC as Output
-  RCC->AHB2ENR |= RCC_AHB2ENR_GPIOCEN;
-  GPIOC->MODER &= ~(GPIO_MODER_MODE3);
-  GPIOC->MODER |= (GPIO_MODER_MODE3_0);
-  GPIOC->ODR &= ~(GPIO_ODR_OD3);
-  // PA8 Clock Signal
-  // Enable MCO, select MSI (4 MHz source)
-  RCC->CFGR = ((RCC->CFGR & ~(RCC_CFGR_MCOSEL)) | (RCC_CFGR_MCOSEL_0));
-  // Configure MCO output on PA8
-  RCC->AHB2ENR |= (RCC_AHB2ENR_GPIOAEN);
-  GPIOA->MODER &= ~(GPIO_MODER_MODE8); // alternate function mode
-  GPIOA->MODER |= (2 << GPIO_MODER_MODE8_Pos);
-  GPIOA->OTYPER &= ~(GPIO_OTYPER_OT8); // Push-pull output
-  GPIOA->PUPDR &= ~(GPIO_PUPDR_PUPD8); // no resistor
-  GPIOA->OSPEEDR |= (GPIO_OSPEEDR_OSPEED8); // high speed
-  GPIOA->AFR[1] &= ~(GPIO_AFRH_AFSEL8); // select MCO function
-  // Enable RCC
-  RCC->APB1ENR1 |= (RCC_APB1ENR1_TIM2EN);
-  // Enable Timer Interrupt and CC1 Interrupt
-  TIM2->DIER |= ( TIM_DIER_CC1IE);
-  // Clear Timer and CC1 Interrupt Flag
-  TIM2->SR &= ~( TIM_SR_CC1IF);
-  // Set ARR to 5khz Period
-  TIM2->ARR = 0xFFFFFFFF;
-  // Set CCR to 1/4 of that period
-  TIM2->CCR1 = CLOCK_CYCLES - 1;
-  // Start Couting
-  TIM2->CR1 |= (TIM_CR1_CEN);
-  /* USER CODE END 2 */
-  // Enable All Interrupts
-  NVIC->ISER[0] = (1 << (TIM2_IRQn & 0x1F));
-  __enable_irq();
-  while (1)
-  {
-	  uint32_t key = keypad_read();
-	  if(lut_ind >= NUM_SAMPLES){
-		  lut_ind = 0;
-	  }
+	HAL_Init();
+	SystemClock_Config();
 
-	  if(key < 1){
-		  goto set_val;
-	  }
-	  for (int wait = 0; wait < KEYPAD_DELAY; wait++);
-	  lut_ind = 0;
-	  if(key < 6){
-		  lut_ind_inc_val = key;
-	  } else if(key < 10){
-		  switch(key){
-		  case 6:
-			  wave_sel = SIN;
-			  break;
-		  case 7:
-			  wave_sel = TRI;
-			  break;
-		  case 8:
-			  wave_sel = SAW;
-			  break;
-		  case 9:
-			  wave_sel = SQR;
-			  break;
-		  }
-	  } else if(key > 9){
-		  switch(key){
-		  case STAR:
-			  if(duty_cycle > 10){
-				  duty_cycle-=10;
-			  }
-			  break;
-		  case ZERO_KEY:
-			  duty_cycle = 50;
-			  break;
-		  case HASHTAG:
-			  if(duty_cycle < 90){
-				  duty_cycle+=10;
-			  }
-			  break;
-		  }
-	  }
-set_val:
-	if(wave_sel == 3){
-		if(((lut_ind * 100)/NUM_SAMPLES) < duty_cycle){
-			val_to_write = MAX_3PP;
-		}else{
-			val_to_write = 0;
+	DAC_init();
+	keypad_setup();
+
+	// Setup GPIOC as Output
+	RCC->AHB2ENR |= RCC_AHB2ENR_GPIOCEN;
+	GPIOC->MODER &= ~(GPIO_MODER_MODE3);
+	GPIOC->MODER |= (GPIO_MODER_MODE3_0);
+	GPIOC->ODR &= ~(GPIO_ODR_OD3);
+
+	// PA8 Clock Signal
+	// Enable MCO, select MSI (4 MHz source)
+	RCC->CFGR = ((RCC->CFGR & ~(RCC_CFGR_MCOSEL)) | (RCC_CFGR_MCOSEL_0));
+	// Configure MCO output on PA8
+	RCC->AHB2ENR |= (RCC_AHB2ENR_GPIOAEN);
+	GPIOA->MODER &= ~(GPIO_MODER_MODE8); // alternate function mode
+	GPIOA->MODER |= (2 << GPIO_MODER_MODE8_Pos);
+	GPIOA->OTYPER &= ~(GPIO_OTYPER_OT8); // Push-pull output
+	GPIOA->PUPDR &= ~(GPIO_PUPDR_PUPD8); // no resistor
+	GPIOA->OSPEEDR |= (GPIO_OSPEEDR_OSPEED8); // high speed
+	GPIOA->AFR[1] &= ~(GPIO_AFRH_AFSEL8); // select MCO function
+
+	// Enable RCC
+	RCC->APB1ENR1 |= (RCC_APB1ENR1_TIM2EN);
+	// Enable Timer Interrupt and CC1 Interrupt
+	TIM2->DIER |= ( TIM_DIER_CC1IE);
+	// Clear Timer and CC1 Interrupt Flag
+	TIM2->SR &= ~( TIM_SR_CC1IF);
+	// Set ARR to 5khz Period
+	TIM2->ARR = 0xFFFFFFFF;
+	// Set CCR to 1/4 of that period
+	TIM2->CCR1 = CLOCK_CYCLES - 1;
+	// Start Counting
+	TIM2->CR1 |= (TIM_CR1_CEN);
+	/* USER CODE END 2 */
+	// Enable All Interrupts
+	NVIC->ISER[0] = (1 << (TIM2_IRQn & 0x1F));
+	__enable_irq();
+
+	while (1)
+	{
+		uint32_t key = keypad_read();
+
+		if(lut_ind >= NUM_SAMPLES){
+		  lut_ind = 0;
 		}
-	}else{
-		val_to_write = waveform[wave_sel][lut_ind];
-	}
-  }
+
+		if(key > 0){
+
+			for (int wait = 0; wait < KEYPAD_DELAY; wait++);
+
+			lut_ind = 0;
+
+			if(key < 6){
+				lut_ind_inc_val = key;
+			} else if(key < 10){
+				switch(key){
+				case 6:
+					wave_sel = SIN;
+					break;
+				case 7:
+					wave_sel = TRI;
+					break;
+				case 8:
+					wave_sel = SAW;
+					break;
+				case 9:
+					wave_sel = SQR;
+					break;
+				}
+			} else if(key > 9){
+				switch(key){
+				case STAR:
+					if(duty_cycle > 10){
+						duty_cycle-=10;
+					}
+					break;
+				case ZERO_KEY:
+					duty_cycle = 50;
+					break;
+				case HASHTAG:
+					if(duty_cycle < 90){
+						duty_cycle+=10;
+					}
+					break;
+				}
+			}
+		}
+
+		if(wave_sel == 3){
+			if(((lut_ind * 100)/NUM_SAMPLES) < duty_cycle){
+				val_to_write = MAX_3PP;
+			}else{
+				val_to_write = 0;
+			}
+		}else{
+			val_to_write = waveform[wave_sel][lut_ind];
+		}
+    }
 }
+
 void TIM2_IRQHandler(void)
 {
 	GPIOC->ODR |= (GPIO_ODR_OD3);
