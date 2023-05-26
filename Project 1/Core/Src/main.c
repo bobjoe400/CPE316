@@ -36,7 +36,7 @@ uint32_t* waveform[3] = {SIN_LUT, TRI_LUT, SAW_LUT};
 int main(void){
 	HAL_Init();
 	SystemClock_Config();
-
+	
 	DAC_init();
 	keypad_setup();
 
@@ -81,6 +81,51 @@ int main(void){
 
 		if(lut_ind >= NUM_SAMPLES){
 		  lut_ind = 0;
+=======
+	  if(key > 0){
+		  for (int wait = 0; wait < KEYPAD_DELAY; wait++);
+		  lut_ind = 0;
+		  if(key < 6){
+			  lut_ind_inc_val = key;
+		  } else if(key < 10){
+			  switch(key){
+			  case 6:
+				  wave_sel = SIN;
+				  break;
+			  case 7:
+				  wave_sel = TRI;
+				  break;
+			  case 8:
+				  wave_sel = SAW;
+				  break;
+			  case 9:
+				  wave_sel = SQR;
+				  break;
+			  }
+		  } else if(key > 9){
+			  switch(key){
+			  case STAR:
+				  if(duty_cycle > 10){
+					  duty_cycle-=10;
+				  }
+				  break;
+			  case ZERO_KEY:
+				  duty_cycle = 50;
+				  break;
+			  case HASHTAG:
+				  if(duty_cycle < 90){
+					  duty_cycle+=10;
+				  }
+				  break;
+			  }
+		  }
+	  }
+	if(wave_sel == 3){
+		if(((lut_ind * 100)/NUM_SAMPLES) < duty_cycle){
+			val_to_write = MAX_3PP;
+		}else{
+			val_to_write = 0;
+>>>>>>> 577bf98 Assignment 7
 		}
 
 		if(key > 0){
