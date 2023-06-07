@@ -81,7 +81,6 @@ int main(void){
 
 		if(lut_ind >= NUM_SAMPLES){
 		  lut_ind = 0;
-=======
 	  if(key > 0){
 		  for (int wait = 0; wait < KEYPAD_DELAY; wait++);
 		  lut_ind = 0;
@@ -125,7 +124,6 @@ int main(void){
 			val_to_write = MAX_3PP;
 		}else{
 			val_to_write = 0;
->>>>>>> 577bf98 Assignment 7
 		}
 
 		if(key > 0){
