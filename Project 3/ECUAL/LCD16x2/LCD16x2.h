@@ -3,6 +3,7 @@
  *
  *  Created on: Jun 23, 2020
  *      Author: Khaled Magdy
+ *     	Modified by Cooper Mattern
  */
 
 #ifndef LCD16X2_H_
@@ -34,6 +35,7 @@ void LCD_DATA(unsigned char);     // Send 4-Bit Data To LCD
 void LCD_Set_Cursor(unsigned char, unsigned char);  // Set Cursor Position
 void LCD_Write_Char(char);        // Write Character To LCD At Current Position
 void LCD_Write_String(char*);     // Write A String To LCD
+void LCD_Clear_Line(int, int);    // Clears a line of the LCD
 
 
 #endif /* LCD16X2_H_ */

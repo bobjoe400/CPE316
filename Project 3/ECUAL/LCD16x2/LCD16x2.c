@@ -142,6 +142,15 @@ void LCD_Write_String(char *str)
     for(i=0;str[i]!='\0';i++)
        LCD_Write_Char(str[i]);
 }
+
+void LCD_Clear_Line(int line_num, int line_len){
+	LCD_Set_Cursor(line_num, 1);
+	int i;
+	for(i = 0; i < line_len; i++){
+		LCD_Write_Char(0x20);
+	}
+	LCD_Set_Cursor(line_num, 1);
+}
 void LCD_SL()
 {
     LCD_CMD(0x01);
@@ -154,3 +163,4 @@ void LCD_SR()
     LCD_CMD(0x0C);
     DWT_Delay_us(35);
 }
+
