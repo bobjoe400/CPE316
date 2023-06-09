@@ -13,6 +13,8 @@
 #include <stdint.h>
 #include <math.h>
 
+#define operators "enltcsq^*/+-"
+
 static float calculate(float op1, float op2, char operand) {
 
 	float result;
@@ -63,9 +65,9 @@ static int getPrecedence(char op){
 	case '-':
 		return 3;
 	case '(':
-		return -1;
+		return 4;
 	case ')':
-		return -1;
+		return 4;
 	default:
 		return 0;
 	}
@@ -84,25 +86,28 @@ float expEval(char input_buf[CHAR_BUFF_SIZE][CHAR_BUFF_SIZE], int input_size){
 	for(i = 0; i < input_size; i++){
 		char curr = input_buf[i][0];
 
-		if(('0' <= curr) && (curr <= '9')){
+		if((('0' <= curr) && (curr <= '9')) || curr == '`'){
+			if(curr == '`'){
+				input_buf[i][0] = '-';
+			}
 			float num = strtofloat(input_buf[i]);
 			push(sc.operandStack.sp, num);
 		}else if(curr == 'p'){
 			push(sc.operandStack.sp, M_PI);
-		}else if(strchr(valid_input, curr) != NULL){
+		}else if(strchr(operators, curr) != NULL){
 			char top = peek(sc.operatorStack.sp);
 			if(sc.operatorStack.sp == sc.operatorStack.stack){
 				push(sc.operatorStack.sp, curr);
 			}else{
 				int curr_op_prec = getPrecedence(curr);
 				int top_prec = getPrecedence(top);
-				if(curr_op_prec <= top_prec){
+				if(curr_op_prec <= top_prec || top == '(' || top == ')'){
 					push(sc.operatorStack.sp, curr);
 				}else{
 					while((sc.operatorStack.sp != sc.operatorStack.stack) && curr_op_prec > top_prec){
 						char operator = pop(sc.operatorStack.sp);
-						char* arith_start = strchr(valid_input, '^');
-						char* op_loc = strchr(valid_input, operator);
+						char* arith_start = strchr(operators, '^');
+						char* op_loc = strchr(operators, operator);
 						float operand1, operand2;
 
 						if(op_loc < arith_start){
@@ -123,8 +128,8 @@ float expEval(char input_buf[CHAR_BUFF_SIZE][CHAR_BUFF_SIZE], int input_size){
 		}else if(curr == ')'){
 			while(peek(sc.operatorStack.sp) != '('){
 				char operator = pop(sc.operatorStack.sp);
-				char* arith_start = strchr(valid_input, '^');
-				char* op_loc = strchr(valid_input, operator);
+				char* arith_start = strchr(operators, '^');
+				char* op_loc = strchr(operators, operator);
 				float operand1, operand2;
 
 				if(op_loc < arith_start){
@@ -137,15 +142,13 @@ float expEval(char input_buf[CHAR_BUFF_SIZE][CHAR_BUFF_SIZE], int input_size){
 				}
 			}
 			pop(sc.operatorStack.sp);
-		}else{
-			return NAN;
 		}
 	}
 
-	while(sc.operatorStack.sp != sc.operatorStack.stack){
+	while(sc.operatorStack.sp != sc.operatorStack.stack && sc.operandStack.sp != sc.operandStack.stack){
 		char operator = pop(sc.operatorStack.sp);
-		char* arith_start = strchr(valid_input, '^');
-		char* op_loc = strchr(valid_input, operator);
+		char* arith_start = strchr(operators, '^');
+		char* op_loc = strchr(operators, operator);
 		float operand1, operand2;
 
 		if(op_loc < arith_start){
@@ -158,5 +161,13 @@ float expEval(char input_buf[CHAR_BUFF_SIZE][CHAR_BUFF_SIZE], int input_size){
 		}
 	}
 
-	return pop(sc.operandStack.sp);
+	if(sc.operatorStack.sp != sc.operatorStack.stack){
+		return NAN;
+	}
+
+	float retval = pop(sc.operandStack.sp);
+	if(sc.operandStack.sp != sc.operandStack.stack){
+		return NAN;
+	}
+	return retval;
 }

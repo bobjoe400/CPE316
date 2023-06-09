@@ -22,7 +22,6 @@
 #include "LCD16x2/LCD16x2.h"
 #include "UART.h"
 #include "util.h"
-#include "ftoa.h"
 #include "calculator.h"
 
 #include <string.h>
@@ -37,6 +36,7 @@ char print_buff[CHAR_BUFF_SIZE];
 /* -----------------UART Stuff---------------- */
 
 #define CR 0x0d
+#define BSP 0x08
 
 char data = 0;
 char dataBuf[2];
@@ -47,15 +47,17 @@ char dataBuf[2];
 char num_buff[CHAR_BUFF_SIZE];						// Store individual numbers
 char input_buff[CHAR_BUFF_SIZE][CHAR_BUFF_SIZE];	// Store Entire Numbers and Function Keys in Separate Lists
 
+#define valid_input "enltcsq^*/+-()p,."
 
 #define PI 0xF7
 
-uint8_t PROCESS_FLAG = 0;
-uint8_t PROCESSED_FLAG = 0;
+uint8_t EVALUATE = 0;
+uint8_t EVAL_FIN = 0;
 
-uint8_t num_disp = 0;				// Initialize to 0
-uint8_t input_buff_index = 0;		// Initialize to 0
-uint8_t num_buff_index = 0;			// Initialize to 0
+int num_disp = 0;				// Initialize to 0
+int input_buff_index = 0;		// Initialize to 0
+int num_buff_index = 0;			// Initialize to 0
+char prev_input = 0;
 
 /*---------------------------------------------*/
 
@@ -81,14 +83,14 @@ int main(void)
 
     while (1)
     {
-    	if(PROCESS_FLAG){
+    	if(EVALUATE){
     		__disable_irq();
 
-    		PROCESS_FLAG = 0;
+    		EVALUATE = 0;
 
     		float answer;
-    		if((answer = expEval(input_buff, input_buff_index)) != NAN){
-    			ftoa(answer, print_buff, 3);
+    		if(!isnan(answer = expEval(input_buff, input_buff_index))){
+    			dtoa(print_buff, answer);
     		}else{
     			strcpy(print_buff, "ERROR");
     		}
@@ -98,7 +100,7 @@ int main(void)
 
 			memset(print_buff, 0, CHAR_BUFF_SIZE * sizeof(char));
 
-    		PROCESSED_FLAG = 1;
+    		EVAL_FIN = 1;
 
     		__enable_irq();
     	}
@@ -119,13 +121,114 @@ void validateComplex(char data, char* str, int str_len, int min_arg_len){
 	}
 }
 
+void processInput(char data){
+	if((('0' <= data) &&  (data <= '9')) || data == '.' || data == ','){	// If data input is 0-9
+		num_buff[num_buff_index++] = data;	// Write to Num Buffer
+		LCD_Write_Char(data);				// Write to LCD
+		num_disp++;							// Move to next column
+	}else if(strchr(valid_input, data) != NULL){								// Non-Number key
+		if(num_buff_index != 0 && data != ','){
+			memcpy(input_buff[input_buff_index++], num_buff, num_buff_index);	// Copy num_buf into input_buf
+			num_buff_index = 0;
+			memset(num_buff, 0, CHAR_BUFF_SIZE*sizeof(char));				    // Clear num_buf
+		}
+
+		/* Buffer/LCD Handling */
+		switch(data){
+		case 'p':
+			input_buff[input_buff_index++][0] = 'p';
+			LCD_Write_Char(PI);
+			num_disp++;
+			break;
+		case 'q':	// square root
+			validateComplex(data, "sqrt(", SQRT, SQRT_LEN);
+			break;
+		case 's':	// sin
+			validateComplex(data, "sin(", SIN, SIN_LEN);
+			break;
+		case 'c':	// cos
+			validateComplex(data, "cos(", COS, COS_LEN);
+			break;
+		case 't':	// tan
+			validateComplex(data, "tan(", TAN, TAN_LEN);
+			break;
+		case 'l':	// log
+			validateComplex(data, "log(", LOG, LOG_LEN);
+			break;
+		case 'n':	// ln
+			validateComplex(data, "ln(", LN, LN_LEN);
+			break;
+		case 'e':	// e^x
+			validateComplex(data, "e^", EPOW, EPOW_LEN);
+			break;
+		case ',':
+			LCD_Write_Char(data);
+			num_disp++;
+			break;
+		default:
+			if((num_disp == 0 ||(input_buff_index>0 && num_buff_index == 0 && input_buff[input_buff_index-1][0] == '(')) && data == '-'){
+				num_buff[num_buff_index++] = '`';
+			}else{
+				input_buff[input_buff_index++][0] = data;
+			}
+			LCD_Write_Char(data);
+			num_disp++;
+			break;
+		}
+	}
+}
+
+void backspace(){
+	if(num_buff_index != 0){
+		num_buff[--num_buff_index] = '\0';
+		LCD_Backspace_n(1, &num_disp);
+	}else{
+		char alpha = input_buff[--input_buff_index][0];
+		if(('0' <= alpha) &&  (alpha <= '9')){
+			memset(num_buff, 0, CHAR_BUFF_SIZE*sizeof(char));
+			memcpy(num_buff, input_buff[input_buff_index], CHAR_BUFF_SIZE);
+			num_buff_index = strlen(num_buff);
+			num_buff[--num_buff_index] = '\0';
+			memset(input_buff[input_buff_index], 0, CHAR_BUFF_SIZE*sizeof(char));
+			LCD_Backspace_n(1, &num_disp);
+		}else{
+			input_buff[input_buff_index][0] = '\0';
+			switch(alpha){
+			case 'q':	// square root
+				LCD_Backspace_n(SQRT-1, &num_disp);
+				break;
+			case 's':	// sin
+				LCD_Backspace_n(SIN-1, &num_disp);
+				break;
+			case 'c':	// cos
+				LCD_Backspace_n(COS-1, &num_disp);
+				break;
+			case 't':	// tan
+				LCD_Backspace_n(TAN-1, &num_disp);
+				break;
+			case 'l':	// log
+				LCD_Backspace_n(LOG-1, &num_disp);
+				break;
+			case 'n':	// ln
+				LCD_Backspace_n(LN-1, &num_disp);
+				break;
+			case 'e':	// e^x
+				LCD_Backspace_n(EPOW-1, &num_disp);
+				break;
+			default:
+				LCD_Backspace_n(1, &num_disp);
+			}
+		}
+	}
+}
+
 //written by Cooper Mattern
 void USART2_IRQHandler(void){
 	if(USART2->ISR & USART_ISR_RXNE){
 
-		if(PROCESSED_FLAG){
+		if(EVAL_FIN){
 
-			PROCESSED_FLAG = 0;				// Clear Flag
+			EVAL_FIN = 0;				// Clear Flag
 
 			LCD_Clear_Line(1, MAX_DISP);	// Clear 1st Line on LCD
 
@@ -140,6 +243,7 @@ void USART2_IRQHandler(void){
 
 		data = USART2->RDR;
 
+		__disable_irq();
 		/* If we are not at end of LCD screen */
 
 		if (data == CR){				// If ENTER is hit, begin processing
@@ -148,64 +252,25 @@ void USART2_IRQHandler(void){
 				num_buff_index = 0;
 				memset(num_buff, 0, CHAR_BUFF_SIZE*sizeof(char));					// Clear num_buf
 			}
-			PROCESS_FLAG = 1;
-		}else if(num_disp < MAX_DISP){
-			if((('0' <= data) &&  (data <= '9')) || data == '.'){	// If data input is 0-9
-				num_buff[num_buff_index++] = data;	// Write to Num Buffer
-				LCD_Write_Char(data);				// Write to LCD
-				num_disp++;							// Move to next column
-			}else if(strchr(valid_input, data) != NULL){								// Non-Number key
-				if(num_buff_index != 0){
-					memcpy(input_buff[input_buff_index++], num_buff, num_buff_index);	// Copy num_buf into input_buf
-					num_buff_index = 0;
-					memset(num_buff, 0, CHAR_BUFF_SIZE*sizeof(char));				    // Clear num_buf
-				}
-
-				/* Buffer/LCD Handling */
-				switch(data){
-				case 'p':
-					input_buff[input_buff_index++][0] = 'p';
-					LCD_Write_Char(PI);
-					num_disp++;
-					break;
-				case 'q':	// square root
-					validateComplex(data, "sqrt(", SQRT, SQRT);
-					break;
-				case 's':	// sin
-					validateComplex(data, "sin(", SIN, SIN);
-					break;
-				case 'c':	// cos
-					validateComplex(data, "cos(", COS, COS);
-					break;
-				case 't':	// tan
-					validateComplex(data, "tan(", TAN, TAN);
-					break;
-				case 'l':	// log
-					validateComplex(data, "log(", LOG, LOG);
-					break;
-				case 'n':	// ln
-					validateComplex(data, "ln(", LN, LN);
-					break;
-				case 'e':	// e^x
-					validateComplex(data, "e^", EPOW, EPOW);
-					break;
-				case ',':
-					LCD_Write_Char(data);						// Write , to LCD
-					num_disp++;
-					break;
-				default:
-					input_buff[input_buff_index++][0] = data;
-					LCD_Write_Char(data);
-					num_disp++;
-					break;
-				}
+			EVALUATE = 1;
+		}else if (data == BSP){
+			if(num_disp != 0){
+				backspace();
 			}
+		}else if(num_disp < MAX_DISP){
+			processInput(data);
 		}
 
 		/* Debugging */
+//		LCD_Clear_Line(2, MAX_DISP);
+//		LCD_Write_Char((char)(num_disp + '0'));
+//		LCD_Write_Char((char)(num_buff_index + '0'));
+//		LCD_Write_Char((char)(input_buff_index+'0'));
+//		LCD_Set_Cursor(1, num_disp+1);
 		memcpy(dataBuf, &data, sizeof(unsigned char));
 		memcpy(dataBuf + 1, "\0", sizeof(unsigned char));
 		UART_print(dataBuf);
+		__enable_irq();
 	}
 }
 

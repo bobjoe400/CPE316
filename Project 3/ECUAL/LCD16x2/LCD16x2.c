@@ -136,6 +136,7 @@ void LCD_Write_Char(char Data)
    HAL_GPIO_WritePin(LCD16x2_CfgParam.LCD_GPIO, LCD16x2_CfgParam.EN_PIN, 0);
    DWT_Delay_us(LCD16x2_CfgParam.LCD_EN_Delay);
 }
+
 void LCD_Write_String(char *str)
 {
     int i;
@@ -155,6 +156,21 @@ void LCD_Clear_Line(int line_num, int line_len){
 	}
 	LCD_Set_Cursor(line_num, 1);
 }
+
+/*
+ * LCD_Backspace_n() written by Cooper Mattern
+ *
+ */
+void LCD_Backspace_n(int n, int* cursor_loc){
+	*cursor_loc-= (n);
+	LCD_Set_Cursor(1, *cursor_loc+1);
+	int i;
+	for(i = 0; i<n; i++){
+		LCD_Write_Char(0x20);
+	}
+	LCD_Set_Cursor(1, *cursor_loc+1);
+}
+
 void LCD_SL()
 {
     LCD_CMD(0x01);

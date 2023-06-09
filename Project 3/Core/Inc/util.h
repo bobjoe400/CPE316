@@ -41,5 +41,6 @@ typedef struct {
 
 int32_t strtoint(char* str);
 float strtofloat(char* str);
+char * dtoa(char *s, double n);
 
 #endif /* INC_UTIL_H_ */

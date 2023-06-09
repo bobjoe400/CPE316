@@ -10,8 +10,6 @@
 
 #include "util.h"
 
-#define valid_input "enltcsq^*/+-()p,."
-
 float expEval(char input_buf[CHAR_BUFF_SIZE][CHAR_BUFF_SIZE], int input_size);
 
 #endif /* INC_CALCULATOR_H_ */
