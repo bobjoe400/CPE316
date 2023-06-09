@@ -15,11 +15,14 @@
 
 #define operators "enltcsq^*/+-"
 
-static float calculate(float op1, float op2, char operand) {
+/* Given a specific command, performs a mathematical operation
+ * Author: Dalee Roland
+ */
+static float calculate(float op1, float op2, char operator) {
 
 	float result;
 
-	switch(operand) {
+	switch(operator) {
     	case '+':	// add
     		result = op1 + op2;		break;
     	case '-':	// subtract
@@ -50,6 +53,9 @@ static float calculate(float op1, float op2, char operand) {
 	return result;
 }
 
+/* Returns the precedence of a mathematical operator
+ * Author: Cooper Mattern
+ */
 static int getPrecedence(char op){
 	switch(op){
 	case '^':
@@ -73,6 +79,9 @@ static int getPrecedence(char op){
 	}
 }
 
+/* Evaluates the expression inputed by the user
+ *  Author: Cooper Mattern
+ */
 float expEval(char input_buf[CHAR_BUFF_SIZE][CHAR_BUFF_SIZE], int input_size){
 
     StackContainer sc;

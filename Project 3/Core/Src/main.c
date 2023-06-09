@@ -63,6 +63,9 @@ char prev_input = 0;
 
 void SystemClock_Config(void);
 
+/* Main: waits for the user to hit enter before evaluating the expression input by the user
+ * Author: Cooper Mattern
+ */
 int main(void)
 {
     HAL_Init();
@@ -121,14 +124,17 @@ void validateComplex(char data, char* str, int str_len, int min_arg_len){
 	}
 }
 
+/* Processes user input
+ * Author: Cooper Mattern and Dalee Roland
+ * */
 void processInput(char data){
-	if((('0' <= data) &&  (data <= '9')) || data == '.' || data == ','){	// If data input is 0-9
+	if((('0' <= data) &&  (data <= '9')) || data == '.' || data == ','){	// If data input is 0-9, ".", or ","
 		num_buff[num_buff_index++] = data;	// Write to Num Buffer
 		LCD_Write_Char(data);				// Write to LCD
 		num_disp++;							// Move to next column
 	}else if(strchr(valid_input, data) != NULL){								// Non-Number key
 		if(num_buff_index != 0 && data != ','){
-			memcpy(input_buff[input_buff_index++], num_buff, num_buff_index);	// Copy num_buf into input_buf
+			memcpy(input_buff[input_buff_index++], num_buff, num_buff_index);	// Store the number we've typed into the input buffer
 			num_buff_index = 0;
 			memset(num_buff, 0, CHAR_BUFF_SIZE*sizeof(char));				    // Clear num_buf
 		}
@@ -161,13 +167,10 @@ void processInput(char data){
 		case 'e':	// e^x
 			validateComplex(data, "e^", EPOW, EPOW_LEN);
 			break;
-		case ',':
-			LCD_Write_Char(data);
-			num_disp++;
-			break;
 		default:
 			if((num_disp == 0 ||(input_buff_index>0 && num_buff_index == 0 && input_buff[input_buff_index-1][0] == '(')) && data == '-'){
-				num_buff[num_buff_index++] = '`';
+				num_buff[num_buff_index++] = '`';	//Need to use a non '-' character to indicate in storage when we have a negative number
+													//Negative numbers can be entered in either at the beginning of a new line or after an open parenthesis
 			}else{
 				input_buff[input_buff_index++][0] = data;
 			}
@@ -178,21 +181,24 @@ void processInput(char data){
 	}
 }
 
+/* Backspaces on the LCD board and updates the appropriate buffers
+ * Author: Cooper Mattern
+ */
 void backspace(){
-	if(num_buff_index != 0){
-		num_buff[--num_buff_index] = '\0';
+	if(num_buff_index != 0){				//If we're in the middle of typing a number we can just
+		num_buff[--num_buff_index] = '\0';	//delete the last number typed
 		LCD_Backspace_n(1, &num_disp);
 	}else{
 		char alpha = input_buff[--input_buff_index][0];
-		if(('0' <= alpha) &&  (alpha <= '9')){
-			memset(num_buff, 0, CHAR_BUFF_SIZE*sizeof(char));
+		if(('0' <= alpha) &&  (alpha <= '9')){							//If we backspace into a number that's already stored, we need to
+			memset(num_buff, 0, CHAR_BUFF_SIZE*sizeof(char));			//restore the number, and remove the number we're deleting
 			memcpy(num_buff, input_buff[input_buff_index], CHAR_BUFF_SIZE);
 			num_buff_index = strlen(num_buff);
 			num_buff[--num_buff_index] = '\0';
 			memset(input_buff[input_buff_index], 0, CHAR_BUFF_SIZE*sizeof(char));
 			LCD_Backspace_n(1, &num_disp);
 		}else{
-			input_buff[input_buff_index][0] = '\0';
+			input_buff[input_buff_index][0] = '\0';	//Each of the different functions have different lengths
 			switch(alpha){
 			case 'q':	// square root
 				LCD_Backspace_n(SQRT-1, &num_disp);
@@ -222,11 +228,12 @@ void backspace(){
 	}
 }
 
-//written by Cooper Mattern
+/* Whenever user presses a key, processes that input
+ * Author: Cooper Mattern and Dalee Roland
+ */
 void USART2_IRQHandler(void){
 	if(USART2->ISR & USART_ISR_RXNE){
-
-		if(EVAL_FIN){
+		if(EVAL_FIN){	//Check if we just finished evaluating an expression
 
 			EVAL_FIN = 0;				// Clear Flag
 
@@ -243,21 +250,21 @@ void USART2_IRQHandler(void){
 
 		data = USART2->RDR;
 
-		__disable_irq();
-		/* If we are not at end of LCD screen */
+		__disable_irq();                // Ready for interrupt again once data is read, don't want to interrupt in the
+										// middle of input processing
 
 		if (data == CR){				// If ENTER is hit, begin processing
 			if(num_buff_index != 0){
-				memcpy(input_buff[input_buff_index++], num_buff, num_buff_index);	// Copy num_buf into input_buf
+				memcpy(input_buff[input_buff_index++], num_buff, num_buff_index);	// Stores number typed into num_buf into input_buf
 				num_buff_index = 0;
 				memset(num_buff, 0, CHAR_BUFF_SIZE*sizeof(char));					// Clear num_buf
 			}
 			EVALUATE = 1;
-		}else if (data == BSP){
+		}else if (data == BSP){			// If Backspace is hit and the display isn't empty, backspace
 			if(num_disp != 0){
 				backspace();
 			}
-		}else if(num_disp < MAX_DISP){
+		}else if(num_disp < MAX_DISP){	//If any other key is pressed, process the input
 			processInput(data);
 		}
 
@@ -267,9 +274,9 @@ void USART2_IRQHandler(void){
 //		LCD_Write_Char((char)(num_buff_index + '0'));
 //		LCD_Write_Char((char)(input_buff_index+'0'));
 //		LCD_Set_Cursor(1, num_disp+1);
-		memcpy(dataBuf, &data, sizeof(unsigned char));
-		memcpy(dataBuf + 1, "\0", sizeof(unsigned char));
-		UART_print(dataBuf);
+//		memcpy(dataBuf, &data, sizeof(unsigned char));
+//		memcpy(dataBuf + 1, "\0", sizeof(unsigned char));
+//		UART_print(dataBuf);
 		__enable_irq();
 	}
 }

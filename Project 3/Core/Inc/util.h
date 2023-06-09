@@ -39,7 +39,6 @@ typedef struct {
 #define MAX_DISP 16
 #define CHAR_BUFF_SIZE MAX_DISP + 1
 
-int32_t strtoint(char* str);
 float strtofloat(char* str);
 char * dtoa(char *s, double n);
 
