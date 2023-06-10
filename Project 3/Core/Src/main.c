@@ -129,11 +129,11 @@ void validateComplex(char data, char* str, int str_len, int min_arg_len){
  * */
 void processInput(char data){
 	if((('0' <= data) &&  (data <= '9')) || data == '.' || data == ','){	// If data input is 0-9, ".", or ","
-		num_buff[num_buff_index++] = data;	// Write to Num Buffer
+		num_buff[num_buff_index++] = data;	// Write value to num_buffer
 		LCD_Write_Char(data);				// Write to LCD
-		num_disp++;							// Move to next column
-	}else if(strchr(valid_input, data) != NULL){								// Non-Number key
-		if(num_buff_index != 0 && data != ','){
+		num_disp++;							// Move to next index of num_buffer
+	}else if(strchr(valid_input, data) != NULL){								// If it's a valid non-number key then
+		if(num_buff_index != 0 && data != ','){									//If we've typed a number before this key, then
 			memcpy(input_buff[input_buff_index++], num_buff, num_buff_index);	// Store the number we've typed into the input buffer
 			num_buff_index = 0;
 			memset(num_buff, 0, CHAR_BUFF_SIZE*sizeof(char));				    // Clear num_buf
@@ -170,7 +170,7 @@ void processInput(char data){
 		default:
 			if((num_disp == 0 ||(input_buff_index>0 && num_buff_index == 0 && input_buff[input_buff_index-1][0] == '(')) && data == '-'){
 				num_buff[num_buff_index++] = '`';	//Need to use a non '-' character to indicate in storage when we have a negative number
-													//Negative numbers can be entered in either at the beginning of a new line or after an open parenthesis
+													//Negative numbers can be entered in either at the beginning of a new line or after an open paren
 			}else{
 				input_buff[input_buff_index++][0] = data;
 			}
@@ -260,10 +260,8 @@ void USART2_IRQHandler(void){
 				memset(num_buff, 0, CHAR_BUFF_SIZE*sizeof(char));					// Clear num_buf
 			}
 			EVALUATE = 1;
-		}else if (data == BSP){			// If Backspace is hit and the display isn't empty, backspace
-			if(num_disp != 0){
-				backspace();
-			}
+		}else if (data == BSP && num_disp != 0){			// If Backspace is hit and the display isn't empty, backspace
+			backspace();
 		}else if(num_disp < MAX_DISP){	//If any other key is pressed, process the input
 			processInput(data);
 		}
